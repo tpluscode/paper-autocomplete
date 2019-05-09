@@ -17,7 +17,11 @@
   },
   "dependencies": {
     "lit-html": "^1.0.0",
-    "lit-element": "^2.0.1"
+    "lit-element": "^2.0.1",
+    "@polymer/paper-input": "^3.0.2",
+    "@polymer/paper-listbox": "^3.0.1",
+    "@polymer/paper-item": "^3.0.1",
+    "@polymer/polymer": "latest"
   },
   "devDependencies": {
     "owc-dev-server": "^0.3.0",

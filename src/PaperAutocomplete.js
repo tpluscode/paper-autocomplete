@@ -1,3 +1,8 @@
+import { timeOut } from '@polymer/polymer/lib/utils/async'
+import { Debouncer } from '@polymer/polymer/lib/utils/debounce'
+import '@polymer/paper-input/paper-input'
+import '@polymer/paper-item/paper-item'
+import '@polymer/paper-listbox/paper-listbox'
 import { html, css, LitElement } from 'lit-element'
 
 export default class PaperAutocomplete extends LitElement {
@@ -48,38 +53,62 @@ export default class PaperAutocomplete extends LitElement {
 
   constructor() {
     super()
+    this.label = 'Search'
+    this.description = 'Start typing'
     this.showResults = false
     this.disableSearch = false
     this.mapItemValue = item => item.value
     this.mapItemLabel = item => item.label
+    this.fetchResults = text => [{ value: text, label: text }]
+    this.__fetchDebouncer = null
   }
 
   render() {
     const getItemElement = item =>
       html`
-        <paper-item @click="${this.select}">${item.label}</paper-item>
+        <paper-item @click="${this.__select(item)}">${item.label}</paper-item>
       `
-
     return html`
       <paper-input
         id="search"
         .label="${this.label}"
         placeholder="${this.description}"
-        @value-changed="${this.fetchResults}"
+        @value-changed="${this.__startSearch}"
       ></paper-input>
 
       <paper-listbox ?hidden="${!this.showResults}">
-        ${this.results.map(getItemElement)}
+        ${this.showResults ? this.results.map(getItemElement) : ''}
       </paper-listbox>
     `
   }
 
-  select(e) {
-    this.value = this.mapItemValue(e.model.item)
-    this.disableSearch = true
-    this.$.search.value = this.mapItemLabel(e.model.item)
-    this.closeResults()
-    this.disableSearch = false
+  firstUpdated() {
+    this.searchInput = this.renderRoot.querySelector('#search')
+  }
+
+  async __startSearch(e) {
+    if (e.detail.value.length < 3 || this.disableSearch) return
+
+    this.__fetchDebouncer = Debouncer.debounce(
+      this.__fetchDebouncer,
+      timeOut.after(200),
+      async () => {
+        this.results = this.fetchResults(e.detail.value)
+
+        this.showResults = true
+        await this.performUpdate()
+      },
+    )
+  }
+
+  __select(item) {
+    return () => {
+      this.value = this.mapItemValue(item)
+      this.disableSearch = true
+      this.searchInput.value = this.mapItemLabel(item)
+      this.closeResults()
+      this.disableSearch = false
+    }
   }
 
   closeResults() {
