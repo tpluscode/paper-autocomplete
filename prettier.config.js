@@ -1,1 +1,5 @@
-module.exports = require('@open-wc/prettier-config');
+const config = require('@open-wc/prettier-config')
+
+config.semi = false
+
+module.exports = config

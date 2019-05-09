@@ -1,4 +1,4 @@
-import { html, css, LitElement } from 'lit-element';
+import { html, css, LitElement } from 'lit-element'
 
 export default class PaperAutocomplete extends LitElement {
   static get styles() {
@@ -33,7 +33,7 @@ export default class PaperAutocomplete extends LitElement {
       #search {
         flex: 1 65%;
       }
-    `;
+    `
   }
 
   static get properties() {
@@ -43,20 +43,46 @@ export default class PaperAutocomplete extends LitElement {
       label: { type: String },
       description: { type: String },
       searchTemplate: { type: String },
-    };
+    }
   }
 
   constructor() {
-    super();
-    this.heading = 'Hello world!';
+    super()
+    this.showResults = false
+    this.disableSearch = false
+    this.mapItemValue = item => item.value
+    this.mapItemLabel = item => item.label
   }
 
   render() {
+    const getItemElement = item =>
+      html`
+        <paper-item @click="${this.select}">${item.label}</paper-item>
+      `
+
     return html`
-      <h2>${this.heading}</h2>
-      <div>
-        <slot></slot>
-      </div>
-    `;
+      <paper-input
+        id="search"
+        .label="${this.label}"
+        placeholder="${this.description}"
+        @value-changed="${this.fetchResults}"
+      ></paper-input>
+
+      <paper-listbox ?hidden="${!this.showResults}">
+        ${this.results.map(getItemElement)}
+      </paper-listbox>
+    `
+  }
+
+  select(e) {
+    this.value = this.mapItemValue(e.model.item)
+    this.disableSearch = true
+    this.$.search.value = this.mapItemLabel(e.model.item)
+    this.closeResults()
+    this.disableSearch = false
+  }
+
+  closeResults() {
+    this.showResults = false
   }
 }
