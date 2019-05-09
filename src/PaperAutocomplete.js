@@ -59,14 +59,14 @@ export default class PaperAutocomplete extends LitElement {
     this.disableSearch = false
     this.mapItemValue = item => item.value
     this.mapItemLabel = item => item.label
-    this.fetchResults = text => [{ value: text, label: text }]
+    this.fetchResults = text => [{ value: text, label: text, suggestion: text }]
     this.__fetchDebouncer = null
   }
 
   render() {
     const getItemElement = item =>
       html`
-        <paper-item @click="${this.__select(item)}">${item.label}</paper-item>
+        <paper-item @click="${this.__select(item)}">${item.suggestion}</paper-item>
       `
     return html`
       <paper-input
@@ -93,7 +93,7 @@ export default class PaperAutocomplete extends LitElement {
       this.__fetchDebouncer,
       timeOut.after(200),
       async () => {
-        this.results = this.fetchResults(e.detail.value)
+        this.results = await this.fetchResults(e.detail.value)
 
         this.showResults = true
         await this.performUpdate()
