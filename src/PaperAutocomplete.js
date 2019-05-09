@@ -44,7 +44,7 @@ export default class PaperAutocomplete extends LitElement {
   static get properties() {
     return {
       showResults: { type: Boolean },
-      value: { type: String, notify: true },
+      value: { type: String },
       label: { type: String },
       description: { type: String },
       searchTemplate: { type: String },
@@ -104,11 +104,23 @@ export default class PaperAutocomplete extends LitElement {
   __select(item) {
     return () => {
       this.value = this.mapItemValue(item)
-      this.disableSearch = true
-      this.searchInput.value = this.mapItemLabel(item)
+      this.setValue(this.mapItemLabel(item))
       this.closeResults()
-      this.disableSearch = false
+
+      this.dispatchEvent(
+        new CustomEvent('value-changed', {
+          detail: {
+            value: this.value,
+          },
+        }),
+      )
     }
+  }
+
+  setValue(value) {
+    this.disableSearch = true
+    this.searchInput.value = value
+    this.disableSearch = false
   }
 
   closeResults() {
