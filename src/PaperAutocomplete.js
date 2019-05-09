@@ -74,7 +74,10 @@ export default class PaperAutocomplete extends LitElement {
         .label="${this.label}"
         placeholder="${this.description}"
         @value-changed="${this.__startSearch}"
-      ></paper-input>
+      >
+        <slot name="prefix" slot="prefix"></slot>
+        <slot name="suffix" slot="suffix"></slot>
+      </paper-input>
 
       <paper-listbox ?hidden="${!this.showResults}">
         ${this.showResults ? this.results.map(getItemElement) : ''}

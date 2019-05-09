@@ -4,7 +4,9 @@ import '../paper-autocomplete.js'
 const title = 'test'
 render(
   html`
-    <paper-autocomplete .header=${title}> </paper-autocomplete>
+    <paper-autocomplete .header=${title}>
+      <span slot="suffix">Hello</span>
+    </paper-autocomplete>
   `,
   document.querySelector('#demo'),
 )
