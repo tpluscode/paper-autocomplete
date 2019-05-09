@@ -87,6 +87,14 @@ export default class PaperAutocomplete extends LitElement {
 
   firstUpdated() {
     this.searchInput = this.renderRoot.querySelector('#search')
+    this.addEventListener('blur', () => {
+      this.showResults = false
+    })
+    this.searchInput.addEventListener('focus', () => {
+      if (this.results) {
+        this.showResults = true
+      }
+    })
   }
 
   async __startSearch(e) {
