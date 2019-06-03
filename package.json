@@ -16,12 +16,13 @@
     "format": "npm run format:eslint && npm run format:prettier"
   },
   "dependencies": {
-    "lit-html": "^1.0.0",
-    "lit-element": "^2.0.1",
+    "@polymer/iron-a11y-keys": "^3.0.1",
     "@polymer/paper-input": "^3.0.2",
-    "@polymer/paper-listbox": "^3.0.1",
     "@polymer/paper-item": "^3.0.1",
-    "@polymer/polymer": "latest"
+    "@polymer/paper-listbox": "^3.0.1",
+    "@polymer/polymer": "latest",
+    "lit-element": "^2.0.1",
+    "lit-html": "^1.0.0"
   },
   "devDependencies": {
     "owc-dev-server": "^0.3.0",
