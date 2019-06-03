@@ -71,7 +71,7 @@ export default class PaperAutocomplete extends LitElement {
       <iron-a11y-keys
         id="a11y"
         keys="enter"
-        @keys-pressed="${this.__selectCurrent}"
+        @keys-pressed="${this.__setCurrentValue}"
       ></iron-a11y-keys>
       <paper-input
         id="search"
@@ -131,7 +131,7 @@ export default class PaperAutocomplete extends LitElement {
     }
   }
 
-  __selectCurrent(e) {
+  __setCurrentValue(e) {
     this.closeResults()
     this.dispatchEvent(
       new CustomEvent('value-changed', {
