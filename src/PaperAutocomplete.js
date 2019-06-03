@@ -1,8 +1,7 @@
-import { timeOut } from '@polymer/polymer/lib/utils/async'
-import { Debouncer } from '@polymer/polymer/lib/utils/debounce'
 import '@polymer/paper-input/paper-input'
 import '@polymer/paper-item/paper-item'
 import '@polymer/paper-listbox/paper-listbox'
+import '@polymer/iron-a11y-keys/iron-a11y-keys'
 import { html, css, LitElement } from 'lit-element'
 
 export default class PaperAutocomplete extends LitElement {
@@ -69,6 +68,11 @@ export default class PaperAutocomplete extends LitElement {
         <paper-item @click="${this.__select(item)}">${item.suggestion || item.label}</paper-item>
       `
     return html`
+      <iron-a11y-keys
+        id="a11y"
+        keys="enter"
+        @keys-pressed="${this.__selectCurrent}"
+      ></iron-a11y-keys>
       <paper-input
         id="search"
         .label="${this.label}"
@@ -87,6 +91,10 @@ export default class PaperAutocomplete extends LitElement {
 
   firstUpdated() {
     this.searchInput = this.renderRoot.querySelector('#search')
+    const a11yKeys = this.renderRoot.querySelector('#a11y')
+
+    a11yKeys.target = this.searchInput
+
     this.addEventListener('blur', () => {
       this.showResults = false
     })
@@ -99,17 +107,12 @@ export default class PaperAutocomplete extends LitElement {
 
   async __startSearch(e) {
     if (e.detail.value.length < 3 || this.disableSearch) return
+    if (e.detail.value.match(/ $/)) {
+      this.results = await this.fetchResults(e.detail.value)
 
-    this.__fetchDebouncer = Debouncer.debounce(
-      this.__fetchDebouncer,
-      timeOut.after(200),
-      async () => {
-        this.results = await this.fetchResults(e.detail.value)
-
-        this.showResults = true
-        await this.performUpdate()
-      },
-    )
+      this.showResults = true
+      await this.performUpdate()
+    }
   }
 
   __select(item) {
@@ -126,6 +129,17 @@ export default class PaperAutocomplete extends LitElement {
         }),
       )
     }
+  }
+
+  __selectCurrent(e) {
+    this.closeResults()
+    this.dispatchEvent(
+      new CustomEvent('value-changed', {
+        detail: {
+          value: this.searchInput.value.trim(),
+        },
+      }),
+    )
   }
 
   setValue(value) {
