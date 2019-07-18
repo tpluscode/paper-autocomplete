@@ -47,6 +47,7 @@ export default class PaperAutocomplete extends LitElement {
       label: { type: String },
       description: { type: String },
       searchTemplate: { type: String },
+      suggestionPattern: { type: Object, attribute: false },
     }
   }
 
@@ -60,6 +61,7 @@ export default class PaperAutocomplete extends LitElement {
     this.mapItemLabel = item => item.label
     this.fetchResults = text => [{ value: text, label: text }]
     this.__fetchDebouncer = null
+    this.suggestionPattern = /[ ,]$/
   }
 
   render() {
@@ -107,7 +109,7 @@ export default class PaperAutocomplete extends LitElement {
 
   async __startSearch(e) {
     if (e.detail.value.length < 3 || this.disableSearch) return
-    if (e.detail.value.match(/ $/)) {
+    if (e.detail.value.match(this.suggestionPattern)) {
       this.results = await this.fetchResults(e.detail.value)
 
       this.showResults = true
